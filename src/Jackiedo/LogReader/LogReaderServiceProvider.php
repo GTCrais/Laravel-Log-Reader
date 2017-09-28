@@ -43,6 +43,16 @@ class LogReaderServiceProvider extends ServiceProvider
         $this->publishes([
             $packageConfigPath => $appconfigPath,
         ], 'config');
+
+		if ($this->app->runningInConsole()) {
+			$this->commands([
+				LogReaderDeleteCommand::class,
+				LogReaderDetailCommand::class,
+				LogReaderFileListCommand::class,
+				LogReaderGetCommand::class,
+				LogReaderRemoveFileCommand::class,
+			]);
+		}
     }
 
     /**
@@ -79,11 +89,5 @@ class LogReaderServiceProvider extends ServiceProvider
         $this->app->bind('command.log-reader.file-list', 'Jackiedo\LogReader\Console\Commands\LogReaderFileListCommand');
         $this->app->bind('command.log-reader.get', 'Jackiedo\LogReader\Console\Commands\LogReaderGetCommand');
         $this->app->bind('command.log-reader.remove-file', 'Jackiedo\LogReader\Console\Commands\LogReaderRemoveFileCommand');
-
-        $this->commands('command.log-reader.delete');
-        $this->commands('command.log-reader.detail');
-        $this->commands('command.log-reader.file-list');
-        $this->commands('command.log-reader.get');
-        $this->commands('command.log-reader.remove-file');
     }
 }
