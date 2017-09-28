@@ -28,7 +28,7 @@ class LogReaderFileListCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         $logPath = $this->option('log-path');
 
