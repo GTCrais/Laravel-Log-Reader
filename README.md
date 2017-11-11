@@ -6,6 +6,10 @@
 
 Laravel Log Reader is an easy log reader and management tool for Laravel. You can easily view, manage, and modify the log entries throught web browser and Artisan CLI. Using Laravel Log Reader is almost identical to using any Eloquent model.
 
+# Release Notes
+This particular fork fixes log parsing for Laravel 5.3 - 5.5. It is possible it's incompatible with lower versions of Laravel 5, but it hasn't been tested.  
+This version is incompatible with Laravel 4.x logs format.
+
 # Features
 - Allows using with Facade or using dependency injection (version 2.x only).
 - Working via Artisan CLI.
