@@ -1,5 +1,5 @@
 {
-    "name": "cesarga/log-reader",
+    "name": "gtcrais/log-reader",
     "description": "An easy log reader and management tool for Laravel",
     "keywords": ["log", "logs", "reader", "viewer", "log-reader", "log-viewer", "log-manager", "laravel"],
     "license": "MIT",
@@ -23,13 +23,13 @@
             "Jackiedo\\LogReader\\": "src/Jackiedo/LogReader"
         }
     },
-		"extra": {
-			"laravel": {
-				"providers": "Jackiedo\\LogReader\\LogReaderServiceProvider"
-			},
-			"aliases": {
-				"LogReader": "Jackiedo\\LogReader\\Facades\\LogReader"
-			}
-		},
+    "extra": {
+        "laravel": {
+            "providers": "Jackiedo\\LogReader\\LogReaderServiceProvider"
+        },
+        "aliases": {
+            "LogReader": "Jackiedo\\LogReader\\Facades\\LogReader"
+        }
+    },
     "minimum-stability": "stable"
 }

@@ -300,17 +300,17 @@ class LogEntry
         }
     }
 
-    /**
-     * Sets the log entry's context property.
-     *
-     * @param  string  $context
-     *
-     * @return void
-     */
-    protected function setContext($context = null)
+	/**
+	 * Sets the log entry's context property.
+	 *
+	 * @param  string $context
+	 *
+	 * @param string $format_version
+	 */
+    protected function setContext($context = null, $format_version = "laravel53")
     {
         if ($context) {
-            $this->context = new LogContext($this->parser, $context);
+            $this->context = new LogContext($this->parser, $context, $format_version);
         }
     }
 
@@ -359,13 +359,14 @@ class LogEntry
         $bodyParsed                       = $this->parser->parseLogBody($this->attributes['body']);
         $this->attributes['context']      = $bodyParsed['context'];
         $this->attributes['stack_traces'] = $bodyParsed['stack_traces'];
+        $this->attributes['format_version'] = $bodyParsed['format_version'];
 
         $this->setId($this->generateId());
         $this->setDate($this->attributes['date']);
         $this->setEnvironment($this->attributes['environment']);
         $this->setLevel($this->attributes['level']);
         $this->setFilePath($this->attributes['file_path']);
-        $this->setContext($this->attributes['context']);
+        $this->setContext($this->attributes['context'], $this->attributes['format_version']);
         $this->setStackTraces($this->attributes['stack_traces']);
     }
 

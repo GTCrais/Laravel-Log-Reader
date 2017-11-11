@@ -54,18 +54,21 @@ class LogContext
      */
     protected $content;
 
-    /**
-     * Create instance of log context
-     *
-     * @param  object  $parser
-     * @param  string  $content
-     *
-     * @return void
-     */
-    public function __construct(LogParser $parser, $content)
+	protected $format_version;
+
+	/**
+	 * Create instance of log context
+	 *
+	 * @param LogParser|object $parser
+	 * @param  string $content
+	 *
+	 * @param string $format_version
+	 */
+    public function __construct(LogParser $parser, $content, $format_version = "laravel53")
     {
         $this->parser  = $parser;
         $this->content = $content;
+        $this->format_version = $format_version;
 
         $this->assignAttributes();
     }
@@ -88,7 +91,7 @@ class LogContext
      */
     protected function assignAttributes()
     {
-        $parsed = $this->parser->parseLogContext($this->content);
+        $parsed = $this->parser->parseLogContext($this->content, $this->format_version);
 
         foreach ($parsed as $key => $value) {
             $this->{$key} = $value;

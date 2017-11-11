@@ -35,7 +35,7 @@ interface LogParser
      *
      * @return array   Structure is ['message' => '', 'exception' => '', 'in' => '', 'line' => '']
      */
-    public function parseLogContext($content);
+    public function parseLogContext($content, $laravel_version = "laravel53");
 
     /**
      * Parses the stack trace part of the log entry into an array containing the necessary information
