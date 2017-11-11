@@ -5,6 +5,7 @@ use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Jackiedo\LogReader\Contracts\LogParser as LogParserInterface;
 use Jackiedo\LogReader\Entities\LogEntry;
 use Jackiedo\LogReader\Exceptions\UnableToRetrieveLogFilesException;
@@ -706,18 +707,22 @@ class LogReader
             return $log;
         }
 
-        $needReFormat = in_array('Next', $parsed_headerSet);
-        $newContent   = null;
+        //$needReFormat = in_array('Next', $parsed_headerSet);
+        //$newContent   = null;
 
         foreach ($parsed_headerSet as $key => $header) {
+			$is_child_entry = false;
+
             if (empty($parsed_dateSet[$key])) {
+				$is_child_entry = Str::startsWith($header, "Next");
+
                 $parsed_dateSet[$key]  = $parsed_dateSet[$key-1];
                 $parsed_envSet[$key]   = $parsed_envSet[$key-1];
                 $parsed_levelSet[$key] = $parsed_levelSet[$key-1];
                 $header                = str_replace("Next", $parsed_headerSet[$key-1], $header);
             }
 
-            $newContent .= $header.' '.$parsed_bodySet[$key];
+            //$newContent .= $header.' '.$parsed_bodySet[$key];
 
             if ((empty($allowedEnvironment) || $allowedEnvironment == $parsed_envSet[$key]) && $this->levelable->filter($parsed_levelSet[$key], $allowedLevel)) {
                 $log[] = [
@@ -726,14 +731,15 @@ class LogReader
                     'date'        => $parsed_dateSet[$key],
                     'file_path'   => $this->getCurrentLogPath(),
                     'header'      => $header,
+					'is_child_entry' => $is_child_entry,
                     'body'        => $parsed_bodySet[$key]
                 ];
             }
         }
 
-        if ($needReFormat) {
+        /*if ($needReFormat) {
             file_put_contents($this->getCurrentLogPath(), $newContent);
-        }
+        }*/
 
         return $log;
     }

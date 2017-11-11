@@ -66,6 +66,13 @@ class LogEntry
      */
     public $stack_traces;
 
+	/**
+	 * "Next" exception flag.
+	 *
+	 * @var bool
+	 */
+	public $is_child_entry;
+
     /**
      * Store instance of LogParser for parsing content of the log entry
      *
@@ -334,6 +341,16 @@ class LogEntry
         $this->stack_traces = new Collection($output);
     }
 
+	/**
+	 * Sets is_child_entry flag.
+	 *
+	 * @param bool|false $isChildEntry
+	 */
+	protected function setIsChildEntry($isChildEntry = false)
+	{
+		$this->is_child_entry = $isChildEntry;
+	}
+
     /**
      * Sets the attributes property.
      *
@@ -368,6 +385,7 @@ class LogEntry
         $this->setFilePath($this->attributes['file_path']);
         $this->setContext($this->attributes['context'], $this->attributes['format_version']);
         $this->setStackTraces($this->attributes['stack_traces']);
+        $this->setIsChildEntry($this->attributes['is_child_entry']);
     }
 
     /**
