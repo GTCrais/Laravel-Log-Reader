@@ -113,14 +113,45 @@ class LogParser implements LogParserInterface
 				'exception' => null,
 				'message' => null,
 				'in' => null,
-				'line' => null
+				'line' => null,
+				'user' => null
 			];
 
-			$parts = explode('{"exception"', $content);
+			$json = false;
 
-			if (isset($parts[1])) {
-				$json = '{"exception"' . $parts[1] . '"}';
+			if (preg_match('/"userId"\:.+"exception"/', $content)) {
+				try {
+					$parts = preg_split('/("userId"\:.+"exception")/', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
 
+					$userData = explode('"exception"', $parts[1]);
+					$userData = '{' . trim($userData[0], ',') . '}';
+				    $userData = json_decode($userData, true);
+					$userInfo = [];
+
+					if (isset($userData['userId'])) {
+						$userInfo[] = "User ID: " . $userData['userId'];
+					}
+
+					if (isset($userData['email'])) {
+						$userInfo[] = "Email: " . $userData['email'];
+					}
+
+					$userInfo = implode(', ', $userInfo);
+					$context['user'] = $userInfo;
+
+					$json = '{"exception"' . $parts[2] . '"}';
+				} catch (\Exception $e) {
+
+				}
+			} else {
+				$parts = explode('{"exception"', $content);
+
+				if (isset($parts[1])) {
+					$json = '{"exception"' . $parts[1] . '"}';
+				}
+			}
+
+			if ($json) {
 				try {
 					$exceptionsData = json_decode($json, true);
 					$exceptionsData = $exceptionsData['exception'];
