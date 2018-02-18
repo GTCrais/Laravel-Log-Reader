@@ -113,14 +113,45 @@ class LogParser implements LogParserInterface
 				'exception' => null,
 				'message' => null,
 				'in' => null,
-				'line' => null
+				'line' => null,
+				'user' => null
 			];
 
-			$parts = explode('{"exception"', $content);
+			$json = false;
 
-			if (isset($parts[1])) {
-				$json = '{"exception"' . $parts[1] . '"}';
+			if (preg_match('/"userId"\:.+"exception"/', $content)) {
+				try {
+					$parts = preg_split('/("userId"\:.+"exception")/', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
 
+					$userData = explode('"exception"', $parts[1]);
+					$userData = '{' . trim($userData[0], ',') . '}';
+				    $userData = json_decode($userData, true);
+					$userInfo = [];
+
+					if (isset($userData['userId'])) {
+						$userInfo[] = "User ID: " . $userData['userId'];
+					}
+
+					if (isset($userData['email'])) {
+						$userInfo[] = "Email: " . $userData['email'];
+					}
+
+					$userInfo = implode(', ', $userInfo);
+					$context['user'] = $userInfo;
+
+					$json = '{"exception"' . $parts[2] . '"}';
+				} catch (\Exception $e) {
+
+				}
+			} else {
+				$parts = explode('{"exception"', $content);
+
+				if (isset($parts[1])) {
+					$json = '{"exception"' . $parts[1] . '"}';
+				}
+			}
+
+			if ($json) {
 				try {
 					$exceptionsData = json_decode($json, true);
 					$exceptionsData = $exceptionsData['exception'];
@@ -132,7 +163,24 @@ class LogParser implements LogParserInterface
 					$exceptionsData = trim($exceptionsData);
 					$exceptionsData = trim($exceptionsData, '()');
 
-					$exceptionsAndMessages = explode(', ', $exceptionsData);
+					$exceptionsAndMessagesPregSplitData = preg_split('/(\:\d+\,\s)/', $exceptionsData, -1, PREG_SPLIT_DELIM_CAPTURE);
+					$exceptionsAndMessages = [];
+
+					if (count($exceptionsAndMessagesPregSplitData) > 1) {
+						for ($i = 0; $i < count($exceptionsAndMessagesPregSplitData); $i += 2) {
+							$exceptionAndMessage = $exceptionsAndMessagesPregSplitData[$i];
+
+							if (isset($exceptionsAndMessagesPregSplitData[$i + 1])) {
+								$exceptionAndMessage .= $exceptionsAndMessagesPregSplitData[$i + 1];
+								$exceptionAndMessage = trim(trim($exceptionAndMessage), ',');
+							}
+
+							$exceptionsAndMessages[] = $exceptionAndMessage;
+						}
+					} else {
+						$exceptionsAndMessages = $exceptionsAndMessagesPregSplitData;
+					}
+
 					$exceptionsAndMessages = array_reverse($exceptionsAndMessages);
 
 					$exceptionsAndMessagesArray = [];
