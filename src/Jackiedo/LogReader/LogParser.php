@@ -163,7 +163,24 @@ class LogParser implements LogParserInterface
 					$exceptionsData = trim($exceptionsData);
 					$exceptionsData = trim($exceptionsData, '()');
 
-					$exceptionsAndMessages = explode(', ', $exceptionsData);
+					$exceptionsAndMessagesPregSplitData = preg_split('/(\:\d+\,\s)/', $exceptionsData, -1, PREG_SPLIT_DELIM_CAPTURE);
+					$exceptionsAndMessages = [];
+
+					if (count($exceptionsAndMessagesPregSplitData) > 1) {
+						for ($i = 0; $i < count($exceptionsAndMessagesPregSplitData); $i += 2) {
+							$exceptionAndMessage = $exceptionsAndMessagesPregSplitData[$i];
+
+							if (isset($exceptionsAndMessagesPregSplitData[$i + 1])) {
+								$exceptionAndMessage .= $exceptionsAndMessagesPregSplitData[$i + 1];
+								$exceptionAndMessage = trim(trim($exceptionAndMessage), ',');
+							}
+
+							$exceptionsAndMessages[] = $exceptionAndMessage;
+						}
+					} else {
+						$exceptionsAndMessages = $exceptionsAndMessagesPregSplitData;
+					}
+
 					$exceptionsAndMessages = array_reverse($exceptionsAndMessages);
 
 					$exceptionsAndMessagesArray = [];
